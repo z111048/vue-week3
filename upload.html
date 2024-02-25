@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>檔案上傳</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="text" id="token" placeholder="輸入token" />
+      <input type="file" name="file-to-upload" id="file" />
+      <input type="button" value="Upload" onclick="uploadFile()" />
+    </form>
+
+    <div id="uploadResult"></div>
+    <!-- 新增一個顯示結果的區域 -->
+
+    <script>
+      function uploadFile() {
+        var token = document.getElementById("token").value;
+        var fileInput = document.getElementById("file");
+        var file = fileInput.files[0];
+        var formData = new FormData();
+        formData.append("file-to-upload", file);
+
+        axios.defaults.headers.common["Authorization"] = token;
+
+        axios
+          .post(
+            "https://vue3-course-api.hexschool.io/api/james9527/admin/upload",
+            formData
+          )
+          .then(function (response) {
+            console.log(response);
+            if (response.data.success) {
+              // 顯示上傳成功訊息和圖片下載路徑
+              document.getElementById(
+                "uploadResult"
+              ).innerHTML = `<p>上傳成功！</p><p>圖片連結: <a href="${response.data.imageUrl}" target="_blank">${response.data.imageUrl}</a></p>`;
+            } else {
+              // 處理回應中的失敗情況
+              document.getElementById("uploadResult").textContent =
+                "上傳失敗。";
+            }
+          })
+          .catch(function (error) {
+            document.getElementById("uploadResult").textContent =
+              "上傳過程中發生錯誤。";
+          });
+      }
+    </script>
+  </body>
+</html>
